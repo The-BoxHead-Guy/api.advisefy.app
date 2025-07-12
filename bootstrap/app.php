@@ -17,6 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
             ->prefix('v1')
             ->name('v1.')
             ->group(base_path('routes/api/v1/v1.php'));
+
+        if (app()->environment('local')) {
+            Route::middleware('api')
+                ->prefix('test')
+                ->name('test.')
+                ->group(base_path('routes/test/test.php'));
+        }
     },
     )
     ->withMiddleware(function (Middleware $middleware): void {
