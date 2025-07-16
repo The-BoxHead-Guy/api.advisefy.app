@@ -169,7 +169,7 @@ trait Logger
         string $message,
         array $context = [],
         string $channel = self::DEFAULT_CHANNEL,
-        array $additionalStack = []
+        array $additionalStack = ['slack']
     ): void {
         $this->log(
             'critical',
