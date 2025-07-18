@@ -45,7 +45,6 @@ class PiecesOfAdvicesController extends Controller
         $this->logInfo('Received request to create piece of advice', $data);
 
         $pieceOfAdvice = $this->service->create($data);
-
         $this->logInfo('Piece of advice created successfully', ['id' => $pieceOfAdvice->id]);
 
         return new PiecesOfAdvicesResource(
