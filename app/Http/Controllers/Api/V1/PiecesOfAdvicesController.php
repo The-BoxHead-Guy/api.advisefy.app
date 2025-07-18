@@ -9,9 +9,20 @@ use App\Models\PiecesOfAdvices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
+use App\Services\PiecesOfAdvicesService;
+use App\Traits\Logger;
 
 class PiecesOfAdvicesController extends Controller
 {
+    use Logger;
+
+    protected $service;
+
+    public function __construct(PiecesOfAdvicesService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -29,9 +40,17 @@ class PiecesOfAdvicesController extends Controller
      */
     public function store(StorePiecesOfAdvicesRequest $request)
     {
-        return Response::json([
+        $data = $request->only(['text', 'author']);
+        $this->logInfo('Received request to create piece of advice', $data);
+
+        $pieceOfAdvice = $this->service->create($data);
+
+        $this->logInfo('Piece of advice created successfully', ['id' => $pieceOfAdvice->id]);
+
+        return response()->json([
             'status' => 'success',
             'message' => 'Piece of advice created successfully',
+            'data' => $pieceOfAdvice
         ], 201);
     }
 
