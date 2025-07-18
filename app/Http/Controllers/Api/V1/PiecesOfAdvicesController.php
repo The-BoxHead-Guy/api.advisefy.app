@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePiecesOfAdvicesRequest;
 use App\Http\Requests\UpdatePiecesOfAdvicesRequest;
+use App\Http\Resources\PiecesOfAdvicesResource;
 use App\Models\PiecesOfAdvices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -47,11 +48,11 @@ class PiecesOfAdvicesController extends Controller
 
         $this->logInfo('Piece of advice created successfully', ['id' => $pieceOfAdvice->id]);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Piece of advice created successfully',
-            'data' => $pieceOfAdvice
-        ], 201);
+        return (new PiecesOfAdvicesResource(
+            $pieceOfAdvice,
+            'Piece of advice created successfully',
+            201
+        ));
     }
 
     /**

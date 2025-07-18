@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 class PiecesOfAdvicesResource extends BaseResource
 {
-    public function __construct($resource)
+    public function __construct($resource, $message, $status)
     {
         parent::__construct(
             $resource,
@@ -12,7 +12,9 @@ class PiecesOfAdvicesResource extends BaseResource
             [
                 'text'   => $resource->text,
                 'author' => $resource->author,
-            ]
+            ],
+            $message,
+            $status
         );
     }
 }
