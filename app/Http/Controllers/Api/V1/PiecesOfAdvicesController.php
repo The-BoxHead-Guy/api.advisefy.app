@@ -48,11 +48,11 @@ class PiecesOfAdvicesController extends Controller
 
         $this->logInfo('Piece of advice created successfully', ['id' => $pieceOfAdvice->id]);
 
-        return (new PiecesOfAdvicesResource(
+        return new PiecesOfAdvicesResource(
             $pieceOfAdvice,
             'Piece of advice created successfully',
             201
-        ));
+        );
     }
 
     /**
