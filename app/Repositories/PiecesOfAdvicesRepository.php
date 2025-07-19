@@ -52,4 +52,9 @@ class PiecesOfAdvicesRepository implements PiecesOfAdvicesRepositoryInterface
         $this->logWarning('Piece of advice not found for deletion in repository', ['id' => $id]);
         return false;
     }
+
+    public function existsByContent(string $text): bool
+    {
+        return PiecesOfAdvices::where('text', $text)->exists();
+    }
 }
