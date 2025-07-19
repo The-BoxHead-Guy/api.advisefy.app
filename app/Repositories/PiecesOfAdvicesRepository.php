@@ -15,4 +15,10 @@ class PiecesOfAdvicesRepository implements PiecesOfAdvicesRepositoryInterface
         $this->logInfo('Creating new piece of advice in repository', $data);
         return PiecesOfAdvices::create($data);
     }
+
+    public function find(int $id): ?PiecesOfAdvices
+    {
+        $this->logInfo('Searching for piece of advice in repository', ['id' => $id]);
+        return PiecesOfAdvices::find($id);
+    }
 }
