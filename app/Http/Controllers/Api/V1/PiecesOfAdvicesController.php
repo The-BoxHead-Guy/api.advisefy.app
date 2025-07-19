@@ -61,8 +61,7 @@ class PiecesOfAdvicesController extends Controller
 
             return (new PiecesOfAdvicesResource(
                 $pieceOfAdvice
-            ))
-                ->withMessage('Piece of advice created successfully');
+            ))->withMessage('Piece of advice created successfully');
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Business logic error during piece of advice creation',
