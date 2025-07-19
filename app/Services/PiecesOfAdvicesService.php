@@ -152,4 +152,10 @@ class PiecesOfAdvicesService
             throw $e;
         }
     }
+
+    public function all()
+    {
+        $this->logInfo('Fetching all pieces of advice through service');
+        return $this->repository->all();
+    }
 }
