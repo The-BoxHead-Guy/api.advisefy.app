@@ -154,11 +154,36 @@ class PiecesOfAdvicesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PiecesOfAdvices $piecesOfAdvices)
+    public function destroy(Request $request, int $id)
     {
-        return Response::json([
-            'status' => 'success',
-            'message' => 'Piece of advice deleted successfully',
-        ], 200);
+        $this->logInfo('Received request to delete piece of advice', ['id' => $id]);
+
+        try {
+            $this->service->destroy($id);
+            $this->logInfo('Piece of advice deleted successfully', ['id' => $id]);
+
+            return Response::json([
+                'status' => 'success',
+                'message' => 'Piece of advice deleted successfully',
+            ], 200);
+        } catch (PiecesOfAdviceException $e) {
+            $this->logError('Business logic error during piece of advice deletion', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            return Response::json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], $e->getCode());
+        } catch (Exception $e) {
+            $this->logCritical('Unexpected error during piece of advice deletion', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            return Response::json([
+                'status' => 'error',
+                'message' => 'An unexpected error occurred while deleting the piece of advice.',
+            ], 500);
+        }
     }
 }
