@@ -58,11 +58,11 @@ class PiecesOfAdvicesController extends Controller
             $pieceOfAdvice = $this->service->create($data);
             $this->logInfo('Piece of advice created successfully', ['id' => $pieceOfAdvice->id]);
 
-            return new PiecesOfAdvicesResource(
-                $pieceOfAdvice,
-                'Piece of advice created successfully',
-                201
-            );
+            return (new PiecesOfAdvicesResource(
+                $pieceOfAdvice
+            ))
+                ->withMessage('Piece of advice created successfully')
+                ->withStatus(200);
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Business logic error during piece of advice creation',
