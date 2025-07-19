@@ -53,6 +53,12 @@ class PiecesOfAdvicesRepository implements PiecesOfAdvicesRepositoryInterface
         return false;
     }
 
+    public function all(): iterable
+    {
+        $this->logInfo('Fetching all pieces of advice from repository');
+        return PiecesOfAdvices::all();
+    }
+
     public function existsByContent(string $text): bool
     {
         return PiecesOfAdvices::where('text', $text)->exists();

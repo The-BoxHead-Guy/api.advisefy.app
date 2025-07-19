@@ -11,4 +11,5 @@ interface PiecesOfAdvicesRepositoryInterface
     public function update(int $id, array $data): ?PiecesOfAdvices;
     public function destroy(int $id): bool;
     public function existsByContent(string $text): bool;
+    public function all(): iterable;
 }
