@@ -4,132 +4,83 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 /**
  * Class BaseResource
  *
- * Provides a standardized API response structure with meta and data blocks.
- * All API resources should extend this class to ensure consistency.
+ * Provides a standardized API response structure with common meta blocks.
+ * All API resources should extend this class to ensure consistency for meta data.
  *
  * @package App\Http\Resources
  */
 class BaseResource extends JsonResource
 {
-    /**
-     * The type of the resource (e.g., 'user', 'piece_of_advice').
-     *
-     * @var string
-     */
-    protected $type;
+    // Properties to hold dynamic meta data if needed, set via chainable methods
+    protected $customStatus = 200;
+    protected $customMessage = null;
 
     /**
-     * The attributes to be included in the data block.
+     * Set a custom status code for the response.
      *
-     * @var array
+     * @param int $status
+     * @return $this
      */
-    protected $attributes;
-
-    /**
-     * The ISO 8601 timestamp for the response.
-     *
-     * @var string
-     */
-    protected $timestamp;
-
-    /**
-     * The API version string.
-     *
-     * @var string
-     */
-    protected $apiVersion;
-
-    /**
-     * The HTTP status code for the response.
-     *
-     * @var int
-     */
-    protected $status;
-
-    /**
-     * The copyright string for the response.
-     *
-     * @var string
-     */
-    protected $copyright;
-
-    /**
-     * The message to be included in the data block.
-     *
-     * @var string
-     */
-    protected $message;
-
-    /**
-     * BaseResource constructor.
-     *
-     * @param mixed  $resource   The resource instance.
-     * @param string $type       The type of the resource.
-     * @param array  $attributes The attributes for the resource.
-     * @param string $message    The outcome of the resource.
-     * @param string $code    The code of the resource's operation.
-     */
-    public function __construct($resource, $type, $attributes, $message, $code)
+    public function withStatus(int $status): static
     {
-        parent::__construct($resource);
-
-        $this->type = $type;
-        $this->attributes = $attributes;
-        $this->message = $message;
-        $this->status = $code;
+        $this->customStatus = $status;
+        return $this;
     }
 
     /**
-     * Initializes meta properties for the response.
+     * Set a custom message for the response.
      *
-     * @return void
+     * @param string $message
+     * @return $this
      */
-    private function initializeMeta()
+    public function withMessage(string $message): static
     {
-        $this->timestamp = now()->toIso8601String();
-        $this->apiVersion = config('api.version', 'v1.0.0');
-        $this->status = $this->status ?? 200;
-        $this->copyright = '© 2025 api.advisefy.app. All rights reserved.';
+        $this->customMessage = $message;
+        return $this;
     }
 
     /**
-     * Transform the resource into an array for JSON response.
+     * Transform the resource into an array.
+     *
+     * This method should typically be overridden by child classes
+     * to define the 'data' block's structure for the specific model.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray(Request $request): array
     {
-        return [
-            'data' => [
-                'type'       => $this->type,
-                'id'         => $this->resource->id ?? null,
-                'message'    => $this->message,
-                'attributes' => $this->attributes,
-            ],
-        ];
+        // Default implementation, child resources will override this to define their specific 'data' structure
+        return parent::toArray($request);
     }
 
     /**
-     * Get additional data that should be returned with the resource array.
+     * Get additional data that should be returned with the resource array (the meta block).
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return array<string, mixed>
      */
     public function with(Request $request): array
     {
-        $this->initializeMeta();
+        $meta = [
+            'timestamp' => Carbon::now()->toIso8601String(), // Use Carbon directly
+            'api_version' => config('api.version', 'v1.0.0'),
+            'status' => $this->customStatus, // Use dynamic status
+            'copyright' => '© 2025 api.advisefy.app. All rights reserved.',
+        ];
+
+        // Add message only if it's set
+        if ($this->customMessage !== null) {
+            $meta['message'] = $this->customMessage;
+        }
 
         return [
-            'meta' => [
-                'timestamp'   => $this->timestamp,
-                'api_version' => $this->apiVersion,
-                'status'      => $this->status,
-                'copyright'   => $this->copyright,
-            ],
+            'meta' => $meta,
         ];
     }
 }
