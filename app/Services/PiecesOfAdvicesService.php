@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\Contracts\PiecesOfAdvicesRepositoryInterface;
 use App\Traits\Logger;
+use App\Exceptions\PiecesOfAdviceException;
 
 class PiecesOfAdvicesService
 {
@@ -27,12 +28,11 @@ class PiecesOfAdvicesService
         $this->logInfo('Attempting to find piece of advice', ['id' => $id]);
         $pieceOfAdvice = $this->repository->find($id);
 
-        if ($pieceOfAdvice) {
-            $this->logInfo('Piece of advice found successfully', ['id' => $id]);
-            return $pieceOfAdvice;
+        if (!$pieceOfAdvice) {
+            throw new PiecesOfAdviceException("Piece of advice with ID {$id} not found", 404);
         }
 
-        $this->logInfo('Piece of advice not found', ['id' => $id]);
-        
+        $this->logInfo('Piece of advice found successfully', ['id' => $id]);
+        return $pieceOfAdvice;
     }
 }
