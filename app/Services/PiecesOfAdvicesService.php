@@ -8,6 +8,7 @@ use App\Exceptions\PiecesOfAdviceException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Collection;
 
 class PiecesOfAdvicesService
 {
@@ -153,7 +154,7 @@ class PiecesOfAdvicesService
         }
     }
 
-    public function all()
+    public function all(): Collection
     {
         $this->logInfo('Fetching all pieces of advice through service');
         return $this->repository->all();
