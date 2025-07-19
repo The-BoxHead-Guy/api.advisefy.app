@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\Contracts\PiecesOfAdvicesRepositoryInterface;
 use App\Traits\Logger;
 use App\Exceptions\PiecesOfAdviceException;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -23,6 +24,12 @@ class PiecesOfAdvicesService
     {
         $this->logInfo('Starting transaction for creating piece of advice', $data);
 
+        // Checks for duplicate record
+        if ($this->repository->existsByContent($data['text'])) {
+            $this->logError('Duplicate advice text detected before insert', $data);
+            throw new PiecesOfAdviceException("Duplicate content not allowed", 409);
+        }
+
         try {
             DB::beginTransaction();
 
@@ -33,6 +40,20 @@ class PiecesOfAdvicesService
             $this->logInfo('Transaction committed successfully for piece of advice creation', ['id' => $pieceOfAdvice->id]);
 
             return $pieceOfAdvice;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            if ($e->getCode() == '23000') {
+                $this->logError('Unique constraint violation on advice text', [
+                    'error' => $e->getMessage(),
+                    'data' => $data
+                ]);
+                throw new PiecesOfAdviceException("Duplicate content not allowed", 409);
+            }
+            $this->logError('Transaction rolled back for piece of advice creation', [
+                'error' => $e->getMessage(),
+                'data' => $data
+            ]);
+            throw $e;
         } catch (Exception $e) {
             DB::rollBack();
             $this->logError('Transaction rolled back for piece of advice creation', [
