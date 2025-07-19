@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Response;
 use App\Services\PiecesOfAdvicesService;
 use App\Traits\Logger;
 use App\Exceptions\PiecesOfAdviceException;
+use Exception;
 
 class PiecesOfAdvicesController extends Controller
 {
@@ -45,14 +46,34 @@ class PiecesOfAdvicesController extends Controller
         $data = $request->validated();
         $this->logInfo('Received request to create piece of advice', $data);
 
-        $pieceOfAdvice = $this->service->create($data);
-        $this->logInfo('Piece of advice created successfully', ['id' => $pieceOfAdvice->id]);
+        try {
+            $pieceOfAdvice = $this->service->create($data);
+            $this->logInfo('Piece of advice created successfully', ['id' => $pieceOfAdvice->id]);
 
-        return new PiecesOfAdvicesResource(
-            $pieceOfAdvice,
-            'Piece of advice created successfully',
-            201
-        );
+            return new PiecesOfAdvicesResource(
+                $pieceOfAdvice,
+                'Piece of advice created successfully',
+                201
+            );
+        } catch (PiecesOfAdviceException $e) {
+            $this->logError(
+                'Business logic error during piece of advice creation',
+                ['error' => $e->getMessage(), 'data' => $data]
+            );
+            return Response::json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], $e->getCode());
+        } catch (Exception $e) {
+            $this->logError(
+                'Unexpected error during piece of advice creation',
+                ['error' => $e->getMessage(), 'data' => $data]
+            );
+            return Response::json([
+                'status' => 'error',
+                'message' => 'An unexpected error occurred while creating the piece of advice.',
+            ], 500);
+        }
     }
 
     /**
@@ -80,18 +101,54 @@ class PiecesOfAdvicesController extends Controller
                 'status' => 'error',
                 'message' => $e->getMessage(),
             ], $e->getCode());
+        } catch (Exception $e) {
+            $this->logError(
+                'Unexpected error during piece of advice retrieval',
+                ['id' => $id, 'error' => $e->getMessage()]
+            );
+            return Response::json([
+                'status' => 'error',
+                'message' => 'An unexpected error occurred while retrieving the piece of advice.',
+            ], 500);
         }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePiecesOfAdvicesRequest $request, PiecesOfAdvices $piecesOfAdvices)
+    public function update(UpdatePiecesOfAdvicesRequest $request, int $id)
     {
-        return Response::json([
-            'status' => 'success',
-            'message' => 'Piece of advice updated successfully',
-        ], 200);
+        $data = $request->validated();
+        $this->logInfo('Received request to update piece of advice', ['id' => $id, 'data' => $data]);
+
+        try {
+            $pieceOfAdvice = $this->service->update($id, $data);
+            $this->logInfo('Piece of advice updated successfully', ['id' => $id]);
+
+            return new PiecesOfAdvicesResource(
+                $pieceOfAdvice,
+                'Piece of advice updated successfully',
+                200
+            );
+        } catch (PiecesOfAdviceException $e) {
+            $this->logError(
+                'Business logic error during piece of advice update',
+                ['id' => $id, 'error' => $e->getMessage(), 'data' => $data]
+            );
+            return Response::json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], $e->getCode());
+        } catch (Exception $e) {
+            $this->logError(
+                'Unexpected error during piece of advice update',
+                ['id' => $id, 'error' => $e->getMessage(), 'data' => $data]
+            );
+            return Response::json([
+                'status' => 'error',
+                'message' => 'An unexpected error occurred while updating the piece of advice.',
+            ], 500);
+        }
     }
 
     /**
