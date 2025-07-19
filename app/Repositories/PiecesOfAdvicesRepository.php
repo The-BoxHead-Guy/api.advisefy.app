@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\PiecesOfAdvices;
 use App\Repositories\Contracts\PiecesOfAdvicesRepositoryInterface;
 use App\Traits\Logger;
+use Illuminate\Support\Collection;
 
 class PiecesOfAdvicesRepository implements PiecesOfAdvicesRepositoryInterface
 {
@@ -53,7 +54,7 @@ class PiecesOfAdvicesRepository implements PiecesOfAdvicesRepositoryInterface
         return false;
     }
 
-    public function all(): iterable
+    public function all(): Collection|array
     {
         $this->logInfo('Fetching all pieces of advice from repository');
         return PiecesOfAdvices::all();
