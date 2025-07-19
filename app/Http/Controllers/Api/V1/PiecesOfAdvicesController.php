@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use App\Services\PiecesOfAdvicesService;
 use App\Traits\Logger;
+use App\Exceptions\PiecesOfAdviceException;
 
 class PiecesOfAdvicesController extends Controller
 {
@@ -57,26 +58,29 @@ class PiecesOfAdvicesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PiecesOfAdvices $piecesOfAdvices)
+    public function show(Request $request, int $id)
     {
-        $this->logInfo('Received request to show piece of advice', ['id' => $piecesOfAdvices->id]);
-        $pieceOfAdvice = $this->service->find($piecesOfAdvices->id);
+        $this->logInfo('Received request to show piece of advice');
 
-        if (!$pieceOfAdvice) {
-            $this->logInfo('Piece of advice not found', ['id' => $piecesOfAdvices->id]);
+        try {
+            $pieceOfAdvice = $this->service->find($id);
+            $this->logInfo('Piece of advice retrieved successfully', ['id' => $id]);
+
+            return new PiecesOfAdvicesResource(
+                $pieceOfAdvice,
+                'Piece of advice retrieved successfully',
+                200
+            );
+        } catch (PiecesOfAdviceException $e) {
+            $this->logError(
+                'Piece of advice not found',
+                ['id' => $id, 'error' => $e->getMessage()]
+            );
             return Response::json([
                 'status' => 'error',
-                'message' => 'Piece of advice not found',
-            ], 404);
+                'message' => $e->getMessage(),
+            ], $e->getCode());
         }
-
-        $this->logInfo('Piece of advice retrieved successfully', ['id' => $pieceOfAdvice->id]);
-
-        return new PiecesOfAdvicesResource(
-            $pieceOfAdvice,
-            'Piece of advice retrieved successfully',
-            200
-        );
     }
 
     /**
