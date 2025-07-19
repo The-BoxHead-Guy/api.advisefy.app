@@ -2,10 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Traits\InteractsWithFullResourceMeta;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class PiecesOfAdvicesResource extends BaseResource // Extend the new BaseResource
+class PiecesOfAdvicesResource extends JsonResource
 {
+    use InteractsWithFullResourceMeta;
+
     /**
      * Transform the resource into an array.
      *
@@ -16,12 +20,10 @@ class PiecesOfAdvicesResource extends BaseResource // Extend the new BaseResourc
     {
         return [
             'type' => 'piece_of_advice',
-            'id' => $this->id,
+            'id' => $this->resource->id,
             'attributes' => [
-                'text' => $this->text,
-                'author' => $this->author,
-                'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-                'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+                'text' => $this->resource->text,
+                'author' => $this->resource->author,
             ],
         ];
     }
