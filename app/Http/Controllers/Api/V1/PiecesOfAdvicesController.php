@@ -34,7 +34,8 @@ class PiecesOfAdvicesController extends Controller
 
         try {
             $piecesOfAdvices = $this->service->all();
-            return new PiecesOfAdvicesCollection($piecesOfAdvices);
+            return (new PiecesOfAdvicesCollection($piecesOfAdvices))
+                ->withMessage('Pieces of advice fetched successfully');
         } catch (Exception $e) {
             $this->logError('Unexpected error during fetching all pieces of advice', [
                 'error' => $e->getMessage()
@@ -61,8 +62,7 @@ class PiecesOfAdvicesController extends Controller
             return (new PiecesOfAdvicesResource(
                 $pieceOfAdvice
             ))
-                ->withMessage('Piece of advice created successfully')
-                ->withStatus(200);
+                ->withMessage('Piece of advice created successfully');
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Business logic error during piece of advice creation',
@@ -95,11 +95,8 @@ class PiecesOfAdvicesController extends Controller
             $pieceOfAdvice = $this->service->find($id);
             $this->logInfo('Piece of advice retrieved successfully', ['id' => $id]);
 
-            return new PiecesOfAdvicesResource(
-                $pieceOfAdvice,
-                'Piece of advice retrieved successfully',
-                200
-            );
+            return (new PiecesOfAdvicesResource($pieceOfAdvice))
+                ->withMessage('Piece of advice retrieved successfully');
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Piece of advice not found',
@@ -133,11 +130,8 @@ class PiecesOfAdvicesController extends Controller
             $pieceOfAdvice = $this->service->update($id, $data);
             $this->logInfo('Piece of advice updated successfully', ['id' => $id]);
 
-            return new PiecesOfAdvicesResource(
-                $pieceOfAdvice,
-                'Piece of advice updated successfully',
-                200
-            );
+            return (new PiecesOfAdvicesResource($pieceOfAdvice))
+                ->withMessage('Piece of advice updated successfully');
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Business logic error during piece of advice update',
