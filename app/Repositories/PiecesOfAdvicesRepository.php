@@ -13,19 +13,22 @@ class PiecesOfAdvicesRepository implements PiecesOfAdvicesRepositoryInterface
     public function create(array $data): PiecesOfAdvices
     {
         $this->logInfo('Creating new piece of advice in repository', $data);
+
         return PiecesOfAdvices::create($data);
     }
 
     public function find(int $id): ?PiecesOfAdvices
     {
         $this->logInfo('Searching for piece of advice in repository', ['id' => $id]);
+
         return PiecesOfAdvices::find($id);
     }
 
     public function update(int $id, array $data): ?PiecesOfAdvices
     {
         $this->logInfo('Updating piece of advice in repository', ['id' => $id, 'data' => $data]);
-        $pieceOfAdvice = PiecesOfAdvices::find($id);
+
+        $pieceOfAdvice = $this->find($id);
 
         if ($pieceOfAdvice) {
             $pieceOfAdvice->update($data);
@@ -33,5 +36,20 @@ class PiecesOfAdvicesRepository implements PiecesOfAdvicesRepositoryInterface
         }
 
         return $pieceOfAdvice;
+    }
+
+    public function destroy(int $id): bool
+    {
+        $this->logInfo('Attempting to delete piece of advice in repository', ['id' => $id]);
+
+        $pieceOfAdvice = $this->find($id);
+
+        if ($pieceOfAdvice) {
+            $this->logInfo('Piece of advice deleted successfully in repository', ['id' => $id]);
+            return $pieceOfAdvice->delete();
+        }
+
+        $this->logWarning('Piece of advice not found for deletion in repository', ['id' => $id]);
+        return false;
     }
 }
