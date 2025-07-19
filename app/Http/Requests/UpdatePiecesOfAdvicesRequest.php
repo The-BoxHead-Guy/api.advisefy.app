@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Symfony\Component\HttpFoundation\Response;
 
 class UpdatePiecesOfAdvicesRequest extends FormRequest
 {
@@ -11,7 +14,7 @@ class UpdatePiecesOfAdvicesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +25,42 @@ class UpdatePiecesOfAdvicesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'text' => 'sometimes|string|max:1000',
+            'author' => 'sometimes|string|max:255',
         ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'text.string' => 'The piece of advice text must be a string.',
+            'text.max' => 'The piece of advice text cannot exceed 1000 characters.',
+            'author.string' => 'The author name must be a string.',
+            'author.max' => 'The author name cannot exceed 255 characters.',
+        ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY)
+        );
     }
 }
