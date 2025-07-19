@@ -59,10 +59,24 @@ class PiecesOfAdvicesController extends Controller
      */
     public function show(PiecesOfAdvices $piecesOfAdvices)
     {
-        return Response::json([
-            'status' => 'success',
-            'message' => 'Piece of advice retrieved successfully',
-        ], 200);
+        $this->logInfo('Received request to show piece of advice', ['id' => $piecesOfAdvices->id]);
+        $pieceOfAdvice = $this->service->find($piecesOfAdvices->id);
+
+        if (!$pieceOfAdvice) {
+            $this->logInfo('Piece of advice not found', ['id' => $piecesOfAdvices->id]);
+            return Response::json([
+                'status' => 'error',
+                'message' => 'Piece of advice not found',
+            ], 404);
+        }
+
+        $this->logInfo('Piece of advice retrieved successfully', ['id' => $pieceOfAdvice->id]);
+
+        return new PiecesOfAdvicesResource(
+            $pieceOfAdvice,
+            'Piece of advice retrieved successfully',
+            200
+        );
     }
 
     /**
