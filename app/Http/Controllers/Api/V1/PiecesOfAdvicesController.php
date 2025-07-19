@@ -41,7 +41,7 @@ class PiecesOfAdvicesController extends Controller
      */
     public function store(StorePiecesOfAdvicesRequest $request)
     {
-        $data = $request->only(['text', 'author']);
+        $data = $request->validated();
         $this->logInfo('Received request to create piece of advice', $data);
 
         $pieceOfAdvice = $this->service->create($data);
