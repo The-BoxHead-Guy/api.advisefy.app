@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\PiecesOfAdvices;
 use Illuminate\Database\Seeder;
 
 class PiecesOfAdvicesSeeder extends Seeder
@@ -12,6 +12,6 @@ class PiecesOfAdvicesSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        PiecesOfAdvices::factory()->count(100)->create();
     }
 }
