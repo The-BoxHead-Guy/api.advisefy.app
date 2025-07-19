@@ -6,6 +6,7 @@ en<?php
     use App\Http\Requests\StorePiecesOfAdvicesRequest;
     use App\Http\Requests\UpdatePiecesOfAdvicesRequest;
     use App\Http\Resources\PiecesOfAdvicesResource;
+    use App\Http\Resources\PiecesOfAdvicesCollection;
     use App\Models\PiecesOfAdvices;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Log;
@@ -31,11 +32,20 @@ en<?php
          */
         public function index()
         {
-            Log::info('Initializing display of all pieces of advice');
-            return Response::json([
-                'status' => 'success',
-                'message' => 'Excellent, you are now seeing each piece of advice',
-            ], 200);
+            $this->logInfo('Initializing display of all pieces of advice');
+
+            try {
+                $piecesOfAdvices = $this->service->all();
+                return new PiecesOfAdvicesCollection($piecesOfAdvices);
+            } catch (Exception $e) {
+                $this->logError('Unexpected error during fetching all pieces of advice', [
+                    'error' => $e->getMessage()
+                ]);
+                return Response::json([
+                    'status' => 'error',
+                    'message' => 'An unexpected error occurred while fetching the pieces of advice.',
+                ], 500);
+            }
         }
 
         /**
