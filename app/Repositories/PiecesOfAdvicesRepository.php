@@ -21,4 +21,17 @@ class PiecesOfAdvicesRepository implements PiecesOfAdvicesRepositoryInterface
         $this->logInfo('Searching for piece of advice in repository', ['id' => $id]);
         return PiecesOfAdvices::find($id);
     }
+
+    public function update(int $id, array $data): ?PiecesOfAdvices
+    {
+        $this->logInfo('Updating piece of advice in repository', ['id' => $id, 'data' => $data]);
+        $pieceOfAdvice = PiecesOfAdvices::find($id);
+
+        if ($pieceOfAdvice) {
+            $pieceOfAdvice->update($data);
+            $this->logInfo('Piece of advice updated successfully in repository', ['id' => $id]);
+        }
+
+        return $pieceOfAdvice;
+    }
 }

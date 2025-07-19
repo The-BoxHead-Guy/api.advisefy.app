@@ -8,4 +8,5 @@ interface PiecesOfAdvicesRepositoryInterface
 {
     public function create(array $data): PiecesOfAdvices;
     public function find(int $id): ?PiecesOfAdvices;
+    public function update(int $id, array $data): ?PiecesOfAdvices;
 }
