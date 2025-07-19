@@ -91,4 +91,44 @@ class PiecesOfAdvicesService
             throw $e;
         }
     }
+
+    public function destroy(int $id)
+    {
+        $this->logInfo('Starting transaction for deleting piece of advice', ['id' => $id]);
+
+        try {
+            DB::beginTransaction();
+
+            $this->logInfo('Attempting to find piece of advice before deletion', ['id' => $id]);
+
+            $pieceOfAdvice = $this->repository->find($id);
+            if (!$pieceOfAdvice) {
+                throw new PiecesOfAdviceException("Piece of advice with ID {$id} not found", 404);
+            }
+
+            $deleted = $this->repository->destroy($id);
+            if (!$deleted) {
+                throw new PiecesOfAdviceException("Failed to delete piece of advice with ID {$id}", 500);
+            }
+
+            DB::commit();
+
+            $this->logInfo('Transaction committed successfully for piece of advice deletion', ['id' => $id]);
+            return true;
+        } catch (PiecesOfAdviceException $e) {
+            DB::rollBack();
+            $this->logError('Transaction rolled back for piece of advice deletion - not found or failed', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        } catch (Exception $e) {
+            DB::rollBack();
+            $this->logError('Transaction rolled back for piece of advice deletion - unexpected error', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
 }
