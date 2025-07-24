@@ -26,6 +26,11 @@ trait HasCommonApiResponses
         return CustomResponse::error($errors)->withMessage($message)->withCode(404);
     }
 
+    public static function unprocessableEntity(string $message = 'Unprocessable entity', $errors = null): CustomResponse
+    {
+        return CustomResponse::error($errors)->withMessage($message)->withCode(422);
+    }
+
     public static function internalServerError(string $message = 'Internal server error', $errors = null): CustomResponse
     {
         return CustomResponse::error($errors)->withMessage($message)->withCode(500);
