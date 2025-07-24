@@ -135,8 +135,10 @@ class PiecesOfAdvicesController extends Controller
             $pieceOfAdvice = $this->service->update($id, $data);
             $this->logInfo('Piece of advice updated successfully', ['id' => $id]);
 
-            return (new PiecesOfAdvicesResource($pieceOfAdvice))
-                ->withMessage('Piece of advice updated successfully');
+            return CustomResponse::ok(
+                'Piece of advice updated successfully',
+                new PiecesOfAdvicesResource($pieceOfAdvice)
+            );
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Business logic error during piece of advice update',
