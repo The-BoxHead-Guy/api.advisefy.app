@@ -13,6 +13,7 @@ use App\Http\Resources\PiecesOfAdvicesResource;
 use App\Http\Resources\PiecesOfAdvicesCollection;
 use App\Http\Requests\StorePiecesOfAdvicesRequest;
 use App\Http\Requests\UpdatePiecesOfAdvicesRequest;
+use App\Http\Responses\CustomResponse;
 
 class PiecesOfAdvicesController extends Controller
 {
@@ -32,7 +33,10 @@ class PiecesOfAdvicesController extends Controller
     {
         $this->logInfo('Initializing display of all pieces of advice');
 
+
         try {
+            throw new Exception('test');
+
             $piecesOfAdvices = $this->service->all();
             return (new PiecesOfAdvicesCollection($piecesOfAdvices))
                 ->withMessage('Pieces of advice fetched successfully');
@@ -40,10 +44,10 @@ class PiecesOfAdvicesController extends Controller
             $this->logError('Unexpected error during fetching all pieces of advice', [
                 'error' => $e->getMessage()
             ]);
-            return Response::json([
-                'status' => 'error',
-                'message' => 'An unexpected error occurred while fetching the pieces of advice.',
-            ], 500);
+            return CustomResponse::error()
+                ->withMessage('An unexpected error occurred while fetching the pieces of advice.')
+                ->withCode(500)
+                ->toResponse();
         }
     }
 
@@ -67,19 +71,19 @@ class PiecesOfAdvicesController extends Controller
                 'Business logic error during piece of advice creation',
                 ['error' => $e->getMessage(), 'data' => $data]
             );
-            return Response::json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], $e->getCode());
+            return CustomResponse::error($e->getMessage())
+                ->withMessage($e->getMessage())
+                ->withCode($e->getCode())
+                ->toResponse();
         } catch (Exception $e) {
             $this->logError(
                 'Unexpected error during piece of advice creation',
                 ['error' => $e->getMessage(), 'data' => $data]
             );
-            return Response::json([
-                'status' => 'error',
-                'message' => 'An unexpected error occurred while creating the piece of advice.',
-            ], 500);
+            return CustomResponse::error()
+                ->withMessage('An unexpected error occurred while creating the piece of advice.')
+                ->withCode(500)
+                ->toResponse();
         }
     }
 
@@ -101,19 +105,19 @@ class PiecesOfAdvicesController extends Controller
                 'Piece of advice not found',
                 ['id' => $id, 'error' => $e->getMessage()]
             );
-            return Response::json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], $e->getCode());
+            return CustomResponse::error($e->getMessage())
+                ->withMessage($e->getMessage())
+                ->withCode($e->getCode())
+                ->toResponse();
         } catch (Exception $e) {
             $this->logError(
                 'Unexpected error during piece of advice retrieval',
                 ['id' => $id, 'error' => $e->getMessage()]
             );
-            return Response::json([
-                'status' => 'error',
-                'message' => 'An unexpected error occurred while retrieving the piece of advice.',
-            ], 500);
+            return CustomResponse::error()
+                ->withMessage('An unexpected error occurred while retrieving the piece of advice.')
+                ->withCode(500)
+                ->toResponse();
         }
     }
 
@@ -136,19 +140,19 @@ class PiecesOfAdvicesController extends Controller
                 'Business logic error during piece of advice update',
                 ['id' => $id, 'error' => $e->getMessage(), 'data' => $data]
             );
-            return Response::json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], $e->getCode());
+            return CustomResponse::error($e->getMessage())
+                ->withMessage($e->getMessage())
+                ->withCode($e->getCode())
+                ->toResponse();
         } catch (Exception $e) {
             $this->logError(
                 'Unexpected error during piece of advice update',
                 ['id' => $id, 'error' => $e->getMessage(), 'data' => $data]
             );
-            return Response::json([
-                'status' => 'error',
-                'message' => 'An unexpected error occurred while updating the piece of advice.',
-            ], 500);
+            return CustomResponse::error()
+                ->withMessage('An unexpected error occurred while updating the piece of advice.')
+                ->withCode(500)
+                ->toResponse();
         }
     }
 
@@ -172,19 +176,19 @@ class PiecesOfAdvicesController extends Controller
                 'id' => $id,
                 'error' => $e->getMessage()
             ]);
-            return Response::json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], $e->getCode());
+            return \App\Http\Responses\CustomResponse::error($e->getMessage())
+                ->withMessage($e->getMessage())
+                ->withCode($e->getCode())
+                ->toResponse();
         } catch (Exception $e) {
             $this->logCritical('Unexpected error during piece of advice deletion', [
                 'id' => $id,
                 'error' => $e->getMessage()
             ]);
-            return Response::json([
-                'status' => 'error',
-                'message' => 'An unexpected error occurred while deleting the piece of advice.',
-            ], 500);
+            return \App\Http\Responses\CustomResponse::error()
+                ->withMessage('An unexpected error occurred while deleting the piece of advice.')
+                ->withCode(500)
+                ->toResponse();
         }
     }
 }
