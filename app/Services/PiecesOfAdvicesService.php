@@ -99,6 +99,22 @@ class PiecesOfAdvicesService
                 'error' => $e->getMessage()
             ]);
             throw $e;
+        } catch (QueryException $e) {
+            DB::rollBack();
+            if (in_array($e->getCode(), ['23505', '23000'])) {
+                $this->logError('Unique constraint violation on advice text during update', [
+                    'id' => $id,
+                    'error' => $e->getMessage(),
+                    'data' => $data
+                ]);
+                throw new PiecesOfAdviceException("Duplicate content not allowed", 409);
+            }
+            $this->logError('Transaction rolled back for piece of advice update - query exception', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'data' => $data
+            ]);
+            throw $e;
         } catch (Exception $e) {
             DB::rollBack();
             $this->logError('Transaction rolled back for piece of advice update - unexpected error', [
