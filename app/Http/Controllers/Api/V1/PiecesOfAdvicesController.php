@@ -33,21 +33,20 @@ class PiecesOfAdvicesController extends Controller
     {
         $this->logInfo('Initializing display of all pieces of advice');
 
-
         try {
-            throw new Exception('test');
-
             $piecesOfAdvices = $this->service->all();
-            return (new PiecesOfAdvicesCollection($piecesOfAdvices))
-                ->withMessage('Pieces of advice fetched successfully');
+            return CustomResponse::ok(
+                'Pieces of advice fetched successfully',
+                new PiecesOfAdvicesCollection($piecesOfAdvices)
+            );
         } catch (Exception $e) {
             $this->logError('Unexpected error during fetching all pieces of advice', [
                 'error' => $e->getMessage()
             ]);
-            return CustomResponse::error()
-                ->withMessage('An unexpected error occurred while fetching the pieces of advice.')
-                ->withCode(500)
-                ->toResponse();
+            return CustomResponse::internalServerError(
+                'An unexpected error occurred while fetching the pieces of advice.',
+                ['code' => "SERVER_ERROR", 'message' => $e->getMessage()]
+            );
         }
     }
 
@@ -63,27 +62,28 @@ class PiecesOfAdvicesController extends Controller
             $pieceOfAdvice = $this->service->create($data);
             $this->logInfo('Piece of advice created successfully', ['id' => $pieceOfAdvice->id]);
 
-            return (new PiecesOfAdvicesResource(
-                $pieceOfAdvice
-            ))->withMessage('Piece of advice created successfully');
+            return CustomResponse::created(
+                'Piece of advice created successfully',
+                new PiecesOfAdvicesResource($pieceOfAdvice)
+            );
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Business logic error during piece of advice creation',
-                ['error' => $e->getMessage(), 'data' => $data]
+                ['error' => $e->getMessage(), 'data ' => $data]
             );
-            return CustomResponse::error($e->getMessage())
-                ->withMessage($e->getMessage())
-                ->withCode($e->getCode())
-                ->toResponse();
+            return CustomResponse::error([
+                'code' => 'PIECES_OF_ADVICE_ERROR',
+                'message' => $e->getMessage(),
+            ])->withMessage($e->getMessage())->withCode($e->getCode());
         } catch (Exception $e) {
             $this->logError(
                 'Unexpected error during piece of advice creation',
                 ['error' => $e->getMessage(), 'data' => $data]
             );
-            return CustomResponse::error()
-                ->withMessage('An unexpected error occurred while creating the piece of advice.')
-                ->withCode(500)
-                ->toResponse();
+            return CustomResponse::internalServerError(
+                'An unexpected error occurred while creating the piece of advice.',
+                ['code' => "SERVER_ERROR", 'message' => $e->getMessage()]
+            );
         }
     }
 
@@ -98,26 +98,28 @@ class PiecesOfAdvicesController extends Controller
             $pieceOfAdvice = $this->service->find($id);
             $this->logInfo('Piece of advice retrieved successfully', ['id' => $id]);
 
-            return (new PiecesOfAdvicesResource($pieceOfAdvice))
-                ->withMessage('Piece of advice retrieved successfully');
+            return CustomResponse::ok(
+                'Piece of advice retrieved successfully',
+                new PiecesOfAdvicesResource($pieceOfAdvice)
+            );
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Piece of advice not found',
-                ['id' => $id, 'error' => $e->getMessage()]
+                ['id' => $id, 'error ' => $e->getMessage()]
             );
-            return CustomResponse::error($e->getMessage())
-                ->withMessage($e->getMessage())
-                ->withCode($e->getCode())
-                ->toResponse();
+            return CustomResponse::error([
+                'code' => 'PIECES_OF_ADVICE_ERROR',
+                'message' => $e->getMessage(),
+            ])->withMessage($e->getMessage())->withCode($e->getCode());
         } catch (Exception $e) {
             $this->logError(
                 'Unexpected error during piece of advice retrieval',
                 ['id' => $id, 'error' => $e->getMessage()]
             );
-            return CustomResponse::error()
-                ->withMessage('An unexpected error occurred while retrieving the piece of advice.')
-                ->withCode(500)
-                ->toResponse();
+            return CustomResponse::internalServerError(
+                'An unexpected error occurred while retrieving the piece of advice.',
+                ['code' => "SERVER_ERROR", 'message' => $e->getMessage()]
+            );
         }
     }
 
@@ -138,21 +140,21 @@ class PiecesOfAdvicesController extends Controller
         } catch (PiecesOfAdviceException $e) {
             $this->logError(
                 'Business logic error during piece of advice update',
-                ['id' => $id, 'error' => $e->getMessage(), 'data' => $data]
+                ['id' => $id, 'error' => $e->getMessage(), 'data ' => $data]
             );
-            return CustomResponse::error($e->getMessage())
-                ->withMessage($e->getMessage())
-                ->withCode($e->getCode())
-                ->toResponse();
+            return CustomResponse::error([
+                'code' => 'PIECES_OF_ADVICE_ERROR',
+                'message' => $e->getMessage(),
+            ])->withMessage($e->getMessage())->withCode($e->getCode());
         } catch (Exception $e) {
             $this->logError(
                 'Unexpected error during piece of advice update',
                 ['id' => $id, 'error' => $e->getMessage(), 'data' => $data]
             );
-            return CustomResponse::error()
-                ->withMessage('An unexpected error occurred while updating the piece of advice.')
-                ->withCode(500)
-                ->toResponse();
+            return CustomResponse::internalServerError(
+                'An unexpected error occurred while updating the piece of advice.',
+                ['code' => "SERVER_ERROR", 'message' => $e->getMessage()]
+            );
         }
     }
 
@@ -174,21 +176,21 @@ class PiecesOfAdvicesController extends Controller
         } catch (PiecesOfAdviceException $e) {
             $this->logError('Business logic error during piece of advice deletion', [
                 'id' => $id,
-                'error' => $e->getMessage()
+                'error ' => $e->getMessage()
             ]);
-            return \App\Http\Responses\CustomResponse::error($e->getMessage())
-                ->withMessage($e->getMessage())
-                ->withCode($e->getCode())
-                ->toResponse();
+            return CustomResponse::error([
+                'code' => 'PIECES_OF_ADVICE_ERROR',
+                'message' => $e->getMessage(),
+            ])->withMessage($e->getMessage())->withCode($e->getCode());
         } catch (Exception $e) {
             $this->logCritical('Unexpected error during piece of advice deletion', [
                 'id' => $id,
                 'error' => $e->getMessage()
             ]);
-            return \App\Http\Responses\CustomResponse::error()
-                ->withMessage('An unexpected error occurred while deleting the piece of advice.')
-                ->withCode(500)
-                ->toResponse();
+            return CustomResponse::internalServerError(
+                'An unexpected error occurred while creating the piece of advice.',
+                ['code' => "SERVER_ERROR", 'message' => $e->getMessage()]
+            );
         }
     }
 }
