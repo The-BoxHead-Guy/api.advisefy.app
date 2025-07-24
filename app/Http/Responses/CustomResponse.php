@@ -2,11 +2,14 @@
 
 namespace App\Http\Responses;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
+use Illuminate\Contracts\Support\Responsable;
+use App\Traits\CustomResponseMethodsTrait;
+use App\Traits\CommonApiResponsesTrait;
 
-class CustomResponse
+class CustomResponse implements Responsable
 {
+    use CustomResponseMethodsTrait, CommonApiResponsesTrait;
+
     protected $success;
     protected $status;
     protected $message;
@@ -47,37 +50,7 @@ class CustomResponse
         return $instance;
     }
 
-    public function withMessage(string $message): self
-    {
-        $this->message = $message;
-        return $this;
-    }
-
-    public function withCode(int $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
-
-    public function withData($data): self
-    {
-        $this->data = $data;
-        return $this;
-    }
-
-    public function withErrors($errors): self
-    {
-        $this->errors = $errors;
-        return $this;
-    }
-
-    public function withMeta(array $meta): self
-    {
-        $this->meta = array_merge($this->meta, $meta);
-        return $this;
-    }
-
-    public function toResponse(): JsonResponse
+    public function toResponse($request)
     {
         $response = [
             'success' => $this->success,
