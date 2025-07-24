@@ -2,14 +2,11 @@
 
 namespace App\Http\Resources;
 
-use App\Traits\InteractsWithFullResourceMeta;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class PiecesOfAdvicesCollection extends ResourceCollection
 {
-    use InteractsWithFullResourceMeta;
-
     /**
      * Transform the resource collection into an array.
      *
@@ -19,7 +16,8 @@ class PiecesOfAdvicesCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection,
+            'type' => 'pieces_of_advices_collection',
+            'collection' => $this->collection,
         ];
     }
 }

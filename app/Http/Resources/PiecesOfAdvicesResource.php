@@ -8,8 +8,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PiecesOfAdvicesResource extends JsonResource
 {
-    use InteractsWithFullResourceMeta;
-
     /**
      * Transform the resource into an array.
      *
