@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Responses\CustomResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -56,11 +57,8 @@ class UpdatePiecesOfAdvicesRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(
-            response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY)
+            CustomResponse::unprocessableEntity('Validation failed', $validator->errors())
+                ->toResponse(request())
         );
     }
 }
