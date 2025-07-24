@@ -3,12 +3,12 @@
 namespace App\Http\Responses;
 
 use Illuminate\Contracts\Support\Responsable;
-use App\Traits\CustomResponseMethodsTrait;
-use App\Traits\CommonApiResponsesTrait;
+use App\Traits\InteractsWithResponseMethods;
+use App\Traits\HasCommonApiResponses;
 
 class CustomResponse implements Responsable
 {
-    use CustomResponseMethodsTrait, CommonApiResponsesTrait;
+    use InteractsWithResponseMethods, HasCommonApiResponses;
 
     protected $success;
     protected $status;
@@ -16,19 +16,6 @@ class CustomResponse implements Responsable
     protected $data;
     protected $errors;
     protected $meta;
-
-    protected function __construct()
-    {
-        $this->success = null;
-        $this->status = null;
-        $this->message = null;
-        $this->data = null;
-        $this->errors = null;
-        $this->meta = [
-            'timestamp' => now()->toIso8601String(),
-            'api_version' => 'v1.0',
-        ];
-    }
 
     public static function success($data = null): self
     {
@@ -58,7 +45,7 @@ class CustomResponse implements Responsable
             'message' => $this->message,
             'data' => $this->data,
             'errors' => $this->errors,
-            'meta' => $this->meta,
+            'meta' => $this->withMeta(),
         ];
         return response()->json($response, $this->status);
     }
