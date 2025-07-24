@@ -25,11 +25,7 @@ class PiecesOfAdvicesService
     {
         $this->logInfo('Starting transaction for creating piece of advice', $data);
 
-        // Checks for duplicate record
-        if ($this->repository->existsByContent($data['text'])) {
-            $this->logError('Duplicate advice text detected before insert', $data);
-            throw new PiecesOfAdviceException("Duplicate content not allowed", 409);
-        }
+        $this->checkForDuplicateContent($data['text']);
 
         try {
             DB::beginTransaction();
@@ -158,5 +154,22 @@ class PiecesOfAdvicesService
     {
         $this->logInfo('Fetching all pieces of advice through service');
         return $this->repository->all();
+    }
+
+    /**
+     * Checks if a piece of advice with the given text already exists.
+     *
+     * Throws a PiecesOfAdviceException if a duplicate is found.
+     *
+     * @param string $text The text content to check for duplication.
+     * @throws PiecesOfAdviceException If duplicate content is detected.
+     * @return void
+     */
+    private function checkForDuplicateContent(string $text)
+    {
+        if ($this->repository->existsByContent($text)) {
+            $this->logError('Duplicate advice text detected before insert', ['text' => $text]);
+            throw new PiecesOfAdviceException("Duplicate content not allowed", 409);
+        }
     }
 }
