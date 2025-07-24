@@ -92,10 +92,22 @@ class CustomResponse implements Responsable
             'success' => $this->success,
             'status' => $this->status,
             'message' => $this->message,
-            'data' => $this->data,
-            'errors' => $this->errors,
-            'meta' => $this->withMeta(),
         ];
-        return response()->json($response, $this->status);
+
+        // Add data to the response if it's available
+        if ($this->data !== null) {
+            $response['data'] = $this->data;
+        }
+
+        // Add errors to the response if it's available
+        if ($this->errors !== null) {
+            $response['errors'] = $this->errors;
+        }
+
+        // Add meta information to the response
+        $response['meta'] = $this->withMeta();
+
+        return response()
+            ->json($response, $this->status);
     }
 }
