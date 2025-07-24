@@ -171,10 +171,7 @@ class PiecesOfAdvicesController extends Controller
             $this->service->destroy($id);
             $this->logInfo('Piece of advice deleted successfully', ['id' => $id]);
 
-            return Response::json([
-                'status' => 'success',
-                'message' => 'Piece of advice deleted successfully',
-            ], 200);
+            return CustomResponse::noContent();
         } catch (PiecesOfAdviceException $e) {
             $this->logError('Business logic error during piece of advice deletion', [
                 'id' => $id,

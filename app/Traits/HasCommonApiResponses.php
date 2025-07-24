@@ -16,6 +16,11 @@ trait HasCommonApiResponses
         return CustomResponse::success($data)->withMessage($message)->withCode(201);
     }
 
+    public static function noContent(): CustomResponse
+    {
+        return CustomResponse::success()->withCode(204);
+    }
+
     public static function badRequest(string $message = 'Bad request', $errors = null): CustomResponse
     {
         return CustomResponse::error($errors)->withMessage($message)->withCode(400);
