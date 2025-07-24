@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use App\Http\Responses\CustomResponse;
 
-trait CommonApiResponsesTrait
+trait HasCommonApiResponses
 {
     public static function ok(string $message = 'OK', $data = null): CustomResponse
     {
@@ -26,7 +26,7 @@ trait CommonApiResponsesTrait
         return CustomResponse::error($errors)->withMessage($message)->withCode(404);
     }
 
-    public static function serverError(string $message = 'Server error', $errors = null): CustomResponse
+    public static function internalServerError(string $message = 'Internal server error', $errors = null): CustomResponse
     {
         return CustomResponse::error($errors)->withMessage($message)->withCode(500);
     }
